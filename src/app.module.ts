@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CreateAthleteService } from './application/services/athlete/impl/app.create-athlete.service';
@@ -9,6 +9,7 @@ import { GetAllAtheleteService } from './application/services/athlete/impl/app.g
 import { AthleteRepository } from './infraestructure/database/memory/repository/app.athlete.repository';
 import { GetByCodeAthleteService } from './application/services/athlete/impl/app.get-by-code-athlete.service';
 import { DeleteAthleteService } from './application/services/athlete/impl/app.delete-athlete.service';
+import { AthleteMiddleware } from './infraestructure/rest/athlete/middleware/app.athlete.middleware';
 
 @Module({
   imports: [
@@ -24,4 +25,10 @@ import { DeleteAthleteService } from './application/services/athlete/impl/app.de
   controllers: [AppController, AthleteController],
   providers: [AppService, CreateAthleteService, GetAllAtheleteService, AthleteRepository, GetByCodeAthleteService, DeleteAthleteService],
 })
-export class AppModule { }
+export class AppModule { 
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AthleteMiddleware)
+      .forRoutes(AthleteController);
+  }
+}
