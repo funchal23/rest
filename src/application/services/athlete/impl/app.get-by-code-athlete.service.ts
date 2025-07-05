@@ -9,7 +9,8 @@ export class GetByCodeAthleteService extends AthleteService<string, Promise<Outp
 
     async execute(code: string): Promise<Output<GetByCodeAthleteOutput>> {
         const athlete = await this.athleteRepository.getByCode(code);
-        return Output.create({athlete: this.mapperOutput(athlete)}, {});
+        const athleteOutput = this.mapperOutput(athlete);
+        return Output.create({athlete: athleteOutput}, {_links: athleteOutput.createLinks()});
     }
 
 

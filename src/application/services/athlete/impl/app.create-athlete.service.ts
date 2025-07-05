@@ -12,7 +12,8 @@ export class CreateAthleteService extends AthleteService<CreateAthleteInput, Pro
     async execute(input: CreateAthleteInput): Promise<Output<CreateAthleteOutput>> {
         const athlete = AthleteDomain.create(input);
         const athleteCreated = await this.athleteRepository.create(athlete);
-        return Output.create({athlete: this.mapperOutput(athleteCreated)}, {});
+        const athleteOutput = this.mapperOutput(athleteCreated);
+        return Output.create({athlete: athleteOutput}, {_links: athleteOutput.createLinks()});
     }
 
 

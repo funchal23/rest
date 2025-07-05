@@ -1,4 +1,5 @@
 import { Athlete } from "src/infraestructure/database/memory/entity/app.athlete.entity";
+import { Link } from "./app.link.output";
 
 export class GetByCodeAthleteOutput {
     name: string;
@@ -15,5 +16,11 @@ export class GetByCodeAthleteOutput {
 
     static create(athlete: Athlete): GetByCodeAthleteOutput {
         return new GetByCodeAthleteOutput(athlete);
+    }
+
+    public createLinks(): Link[] {
+        return [
+            { rel: 'delete', href: `/athlete/${this.code}`, method: 'DELETE' }
+        ]
     }
 }

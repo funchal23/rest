@@ -1,3 +1,4 @@
+import { Link } from "src/infraestructure/rest/athlete/outputs/app.link.output";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 
@@ -25,15 +26,20 @@ export class PageAthlete {
     total: number;
     page: number;
     size: number;
+    hasNext: boolean;
+    links: Link[];
 
-    constructor(data: Athlete[], total: number, page:number, size:number){
-        this.data = data,
-        this.total = total,
-        this.page = page,
-        this.size = size
+    constructor(data: Athlete[], total: number, page:number, size:number, links: Link[]){
+        const totalPages = Math.ceil(total / size);
+        this.hasNext = page < totalPages;
+        this.data = data;
+        this.total = total;
+        this.page = page;
+        this.size = size;
+        this.links = links;
     }
 
-    static create(data: Athlete[], total: number, page:number, size:number){
-        return new PageAthlete(data, total, page, size);
+    static create(data: Athlete[], total: number, page:number, size:number, links: Link[]){
+        return new PageAthlete(data, total, page, size, links);
     }
 }

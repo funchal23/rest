@@ -7,7 +7,7 @@ export class GetAthleteOutput {
         this.athletes = athletes;
     }
 
-    static create(athletes: GetDetailAthlete[]): GetAthleteOutput{
+    static create(athletes: GetDetailAthlete[]): GetAthleteOutput {
         return new GetAthleteOutput(athletes);
     }
 }
@@ -15,13 +15,23 @@ export class GetAthleteOutput {
 export class GetDetailAthlete {
     name: string;
     code: string;
+    meta: any;
 
     constructor(athlete: Athlete) {
         this.name = athlete.name;
         this.code = athlete.code;
+        this.meta = this.createLinks();
     }
 
-    static create(athlete: Athlete): GetDetailAthlete{
+    static create(athlete: Athlete): GetDetailAthlete {
         return new GetDetailAthlete(athlete);
+    }
+
+    private createLinks() {
+        return {
+            _links: [
+                { rel: 'delete', href: `/athlete/${this.code}`, method: 'DELETE' }
+            ]
+        }
     }
 }

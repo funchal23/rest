@@ -6,6 +6,7 @@ import { ILike, Repository } from "typeorm";
 import { AthleteDomain } from "src/domain/athlete/app.athlete.domain";
 import { GetAthleteInput } from "src/infraestructure/rest/athlete/inputs/app.get-athlete.input";
 import { DocumentAlreadyExistsException } from "src/exceptions/app.document-already-exists.exception";
+import { Link } from "src/infraestructure/rest/athlete/outputs/app.link.output";
 
 @Injectable()
 export class AthleteRepository implements AtheleteContract {
@@ -39,10 +40,10 @@ export class AthleteRepository implements AtheleteContract {
     async create(athlete: AthleteDomain): Promise<Athlete> {
         const document = athlete.document;
         const athleteExists = await this.athleteRepository.findOne({
-            where: {document}
+            where: { document }
         })
 
-        if(athleteExists){
+        if (athleteExists) {
             DocumentAlreadyExistsException.create(
                 "DocumentAlreadyExistsException",
                 HttpStatus.CONFLICT,
@@ -76,7 +77,30 @@ export class AthleteRepository implements AtheleteContract {
             order: { name: 'ASC' }
         });
 
-        return PageAthlete.create(athletes, total, input.page, input.size);
+        return PageAthlete.create(athletes, total, input.page, input.size, this.createLinks(input, total));
     }
 
+    private createLinks(input: GetAthleteInput, total: number) {
+        const totalPages = Math.ceil(total / input.size);
+        const hasNext = input.page < totalPages;
+        const hasPrevious = input.page > 1;
+        const links: Link[] = [];
+        const nextPageNumber = Number(input.page) + Number(1);
+        const previousPageNumber = Number(input.page) - Number(1); 
+ 
+        if (hasNext) {
+            links.push({
+                rel: 'next',
+                href: `/athlete?page=${nextPageNumber}&size=${input.size}`
+            });
+        }
+
+        if (hasPrevious) {
+            links.push({
+                rel: 'prev',
+                href: `/athlete?page=${previousPageNumber}&size=${input.size}`
+            });
+        }
+        return links;
+    }
 }
